@@ -6,7 +6,7 @@ import (
 )
 
 import (
-	"github.com/sternix/eolian-go/eolian"
+	"github.com/sternix/eolian_go/eolian"
 )
 
 func main() {
