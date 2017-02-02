@@ -28,7 +28,7 @@ func (p *Expression) EvalType(t *Type) *Value {
 }
 
 func (p *Expression) Serialize() string {
-	return GoString(C.eolian_expression_serialize(p.obj))
+	return GoStringFromShared(C.eolian_expression_serialize(p.obj))
 }
 
 func (p *Expression) Type() ExpressionType {

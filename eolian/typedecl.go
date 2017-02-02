@@ -118,7 +118,7 @@ func (p *Typedecl) IsExtern() bool {
 }
 
 func (p *Typedecl) CType() string {
-	return GoString(C.eolian_typedecl_c_type_get(p.obj))
+	return GoStringFromShared(C.eolian_typedecl_c_type_get(p.obj))
 }
 
 func (p *Typedecl) Name() string {

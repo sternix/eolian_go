@@ -33,7 +33,7 @@ func (p *Function) Name() string {
 }
 
 func (p *Function) FullCName(t FunctionType, legacy bool) string {
-	return GoString(C.eolian_function_full_c_name_get(p.obj, C.Eolian_Function_Type(t), EBool(legacy)))
+	return GoStringFromShared(C.eolian_function_full_c_name_get(p.obj, C.Eolian_Function_Type(t), EBool(legacy)))
 }
 
 func (p *Function) Legacy(t FunctionType) string {

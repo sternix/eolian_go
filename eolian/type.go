@@ -65,7 +65,7 @@ func (p *Type) IsRef() bool {
 }
 
 func (p *Type) CType() string {
-	return GoString(C.eolian_type_c_type_get(p.obj))
+	return GoStringFromShared(C.eolian_type_c_type_get(p.obj))
 }
 
 func (p *Type) Name() string {

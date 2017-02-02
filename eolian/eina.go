@@ -27,7 +27,11 @@ func GoBool(b C.Eina_Bool) bool {
 }
 
 func GoString(str *C.Eina_Stringshare) string {
-	//defer C.eina_stringshare_del(str)
+	return C.GoString((*C.char)(str))
+}
+
+func GoStringFromShared(str *C.Eina_Stringshare) string {
+	defer C.eina_stringshare_del(str)
 	return C.GoString((*C.char)(str))
 }
 

@@ -115,9 +115,15 @@ func (p *Class) DestructorEnabled() bool {
 }
 
 func (p *Class) CGetFunctionName() string {
-	return GoString(C.eolian_class_c_get_function_name_get(p.obj))
+	return GoStringFromShared(C.eolian_class_c_get_function_name_get(p.obj))
 }
 
 func (p *Class) Documentation() *Documentation {
 	return NewDocumentation(C.eolian_class_documentation_get(p.obj))
 }
+
+/* not in 1.18.4
+func (p *Class) CDataType() string {
+	return GoStringFromShared(C.eolian_class_c_data_type_get(p.obj))
+}
+*/

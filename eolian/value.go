@@ -17,5 +17,5 @@ func NewValue(obj C.Eolian_Value) *Value {
 }
 
 func (p *Value) ToLiteral() string {
-	return GoString(C.eolian_expression_value_to_literal(&p.obj))
+	return GoStringFromShared(C.eolian_expression_value_to_literal(&p.obj))
 }
