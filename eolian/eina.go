@@ -26,12 +26,12 @@ func GoBool(b C.Eina_Bool) bool {
 	return false
 }
 
-func GoString(str *C.Eina_Stringshare) string {
-	return C.GoString((*C.char)(str))
-}
-
-func GoStringFromShared(str *C.Eina_Stringshare) string {
-	defer C.eina_stringshare_del(str)
+func GoString(str *C.Eina_Stringshare, f ...bool) string {
+	if len(f) > 0 {
+		if f[0] == true {
+			defer C.eina_stringshare_del(str)
+		}
+	}
 	return C.GoString((*C.char)(str))
 }
 

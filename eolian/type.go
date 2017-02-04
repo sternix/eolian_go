@@ -7,7 +7,8 @@ package eolian
 import "C"
 
 type Type struct {
-	obj *C.Eolian_Type
+	obj        *C.Eolian_Type
+	namespaces []string
 }
 
 func NewType(obj *C.Eolian_Type) *Type {
@@ -65,7 +66,7 @@ func (p *Type) IsRef() bool {
 }
 
 func (p *Type) CType() string {
-	return GoStringFromShared(C.eolian_type_c_type_get(p.obj))
+	return GoString(C.eolian_type_c_type_get(p.obj), true)
 }
 
 func (p *Type) Name() string {
@@ -77,7 +78,11 @@ func (p *Type) FullName() string {
 }
 
 func (p *Type) Namespaces() []string {
-	return NewIterator(C.eolian_type_namespaces_get(p.obj)).StringSlice()
+	if p.namespaces != nil {
+		return p.namespaces
+	}
+	p.namespaces = NewIterator(C.eolian_type_namespaces_get(p.obj)).StringSlice()
+	return p.namespaces
 }
 
 func (p *Type) FreeFunc() string {

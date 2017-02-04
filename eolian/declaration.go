@@ -11,6 +11,10 @@ type Declaration struct {
 	obj *C.Eolian_Declaration
 }
 
+var (
+	declarations []*Declaration
+)
+
 func NewDeclaration(obj *C.Eolian_Declaration) *Declaration {
 	return &Declaration{
 		obj: obj,
@@ -30,7 +34,11 @@ func DeclarationByFile(fname string) []*Declaration {
 }
 
 func AllDeclarations() []*Declaration {
-	return NewIterator(C.eolian_all_declarations_get()).DeclarationSlice()
+	if declarations != nil {
+		return declarations
+	}
+	declarations = NewIterator(C.eolian_all_declarations_get()).DeclarationSlice()
+	return declarations
 }
 
 func (p *Declaration) IsValid() bool {

@@ -49,5 +49,5 @@ func (p *Event) IsRestart() bool {
 }
 
 func (p *Event) CName() string {
-	return GoStringFromShared(C.eolian_event_c_name_get(p.obj))
+	return GoString(C.eolian_event_c_name_get(p.obj), true)
 }

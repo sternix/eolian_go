@@ -7,7 +7,8 @@ package eolian
 import "C"
 
 type Function struct {
-	obj *C.Eolian_Function
+	obj        *C.Eolian_Function
+	parameters []*Parameter
 }
 
 func NewFunction(obj *C.Eolian_Function) *Function {
@@ -33,7 +34,7 @@ func (p *Function) Name() string {
 }
 
 func (p *Function) FullCName(t FunctionType, legacy bool) string {
-	return GoStringFromShared(C.eolian_function_full_c_name_get(p.obj, C.Eolian_Function_Type(t), EBool(legacy)))
+	return GoString(C.eolian_function_full_c_name_get(p.obj, C.Eolian_Function_Type(t), EBool(legacy)), true)
 }
 
 func (p *Function) Legacy(t FunctionType) string {
@@ -81,7 +82,11 @@ func (p *Function) Class() *Class {
 }
 
 func (p *Function) Parameters() []*Parameter {
-	return NewIterator(C.eolian_function_parameters_get(p.obj)).ParameterSlice()
+	if p.parameters != nil {
+		return p.parameters
+	}
+	p.parameters = NewIterator(C.eolian_function_parameters_get(p.obj)).ParameterSlice()
+	return p.parameters
 }
 
 func (p *Function) Keys(t FunctionType) []*Parameter {

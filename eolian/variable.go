@@ -8,8 +8,14 @@ import "C"
 import "unsafe"
 
 type Variable struct {
-	obj *C.Eolian_Variable
+	obj        *C.Eolian_Variable
+	namespaces []string
 }
+
+var (
+	allConstants []*Variable
+	allVariables []*Variable
+)
 
 func NewVariable(obj *C.Eolian_Variable) *Variable {
 	return &Variable{
@@ -42,11 +48,19 @@ func ConstantsByFile(fname string) []*Variable {
 }
 
 func AllConstants() []*Variable {
-	return NewIterator(C.eolian_variable_all_constants_get()).VariableSlice()
+	if allConstants != nil {
+		return allConstants
+	}
+	allConstants = NewIterator(C.eolian_variable_all_constants_get()).VariableSlice()
+	return allConstants
 }
 
 func AllGlobalVariables() []*Variable {
-	return NewIterator(C.eolian_variable_all_globals_get()).VariableSlice()
+	if allVariables != nil {
+		return allVariables
+	}
+	allVariables = NewIterator(C.eolian_variable_all_globals_get()).VariableSlice()
+	return allVariables
 }
 
 func (p *Variable) IsValid() bool {
@@ -82,7 +96,11 @@ func (p *Variable) FullName() string {
 }
 
 func (p *Variable) Namespaces() []string {
-	return NewIterator(C.eolian_variable_namespaces_get(p.obj)).StringSlice()
+	if p.namespaces != nil {
+		return p.namespaces
+	}
+	p.namespaces = NewIterator(C.eolian_variable_namespaces_get(p.obj)).StringSlice()
+	return p.namespaces
 }
 
 func (p *Variable) IsExtern() bool {

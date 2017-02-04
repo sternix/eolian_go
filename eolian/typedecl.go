@@ -8,8 +8,17 @@ import "C"
 import "unsafe"
 
 type Typedecl struct {
-	obj *C.Eolian_Typedecl
+	obj          *C.Eolian_Typedecl
+	structFields []*StructField
+	enumFields   []*EnumField
+	namespaces   []string
 }
+
+var (
+	allAliasTypedecls  []*Typedecl
+	allStructTypedecls []*Typedecl
+	allEnumTypedecls   []*Typedecl
+)
 
 func NewTypedecl(obj *C.Eolian_Typedecl) *Typedecl {
 	return &Typedecl{
@@ -54,15 +63,28 @@ func TypedeclEnumsByFile(name string) []*Typedecl {
 }
 
 func TypedeclAllAliases() []*Typedecl {
-	return NewIterator(C.eolian_typedecl_all_aliases_get()).TypedeclSlice()
+	if allAliasTypedecls != nil {
+		return allAliasTypedecls
+	}
+
+	allAliasTypedecls = NewIterator(C.eolian_typedecl_all_aliases_get()).TypedeclSlice()
+	return allAliasTypedecls
 }
 
 func TypedeclAllStructs() []*Typedecl {
-	return NewIterator(C.eolian_typedecl_all_structs_get()).TypedeclSlice()
+	if allStructTypedecls != nil {
+		return allStructTypedecls
+	}
+	allStructTypedecls = NewIterator(C.eolian_typedecl_all_structs_get()).TypedeclSlice()
+	return allStructTypedecls
 }
 
 func TypedeclAllEnums() []*Typedecl {
-	return NewIterator(C.eolian_typedecl_all_enums_get()).TypedeclSlice()
+	if allEnumTypedecls != nil {
+		return allEnumTypedecls
+	}
+	allEnumTypedecls = NewIterator(C.eolian_typedecl_all_enums_get()).TypedeclSlice()
+	return allEnumTypedecls
 }
 
 func (p *Typedecl) IsValid() bool {
@@ -74,7 +96,11 @@ func (p *Typedecl) Type() TypedeclType {
 }
 
 func (p *Typedecl) StructFields() []*StructField {
-	return NewIterator(C.eolian_typedecl_struct_fields_get(p.obj)).StructFieldSlice()
+	if p.structFields != nil {
+		return p.structFields
+	}
+	p.structFields = NewIterator(C.eolian_typedecl_struct_fields_get(p.obj)).StructFieldSlice()
+	return p.structFields
 }
 
 func (p *Typedecl) StructFieldByName(name string) *StructField {
@@ -84,7 +110,11 @@ func (p *Typedecl) StructFieldByName(name string) *StructField {
 }
 
 func (p *Typedecl) EnumFields() []*EnumField {
-	return NewIterator(C.eolian_typedecl_enum_fields_get(p.obj)).EnumFieldSlice()
+	if p.enumFields != nil {
+		return p.enumFields
+	}
+	p.enumFields = NewIterator(C.eolian_typedecl_enum_fields_get(p.obj)).EnumFieldSlice()
+	return p.enumFields
 }
 
 func (p *Typedecl) EnumFieldByName(name string) *EnumField {
@@ -118,7 +148,7 @@ func (p *Typedecl) IsExtern() bool {
 }
 
 func (p *Typedecl) CType() string {
-	return GoStringFromShared(C.eolian_typedecl_c_type_get(p.obj))
+	return GoString(C.eolian_typedecl_c_type_get(p.obj), true)
 }
 
 func (p *Typedecl) Name() string {
@@ -130,7 +160,11 @@ func (p *Typedecl) FullName() string {
 }
 
 func (p *Typedecl) Namespaces() []string {
-	return NewIterator(C.eolian_typedecl_namespaces_get(p.obj)).StringSlice()
+	if p.namespaces != nil {
+		return p.namespaces
+	}
+	p.namespaces = NewIterator(C.eolian_typedecl_namespaces_get(p.obj)).StringSlice()
+	return p.namespaces
 }
 
 func (p *Typedecl) FreeFunc() string {

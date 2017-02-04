@@ -53,7 +53,7 @@ func (p *EnumField) Name() string {
 }
 
 func (p *EnumField) CName() string {
-	return GoStringFromShared(C.eolian_typedecl_enum_field_c_name_get(p.obj))
+	return GoString(C.eolian_typedecl_enum_field_c_name_get(p.obj), true)
 }
 
 func (p *EnumField) Documentation() *Documentation {

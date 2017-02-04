@@ -8,8 +8,18 @@ import "C"
 import "unsafe"
 
 type Class struct {
-	obj *C.Eolian_Class
+	obj          *C.Eolian_Class
+	namespaces   []string
+	inherits     []string
+	functions    []*Function
+	implements   []*Implement
+	constructors []*Constructor
+	events       []*Event
 }
+
+var (
+	classes []*Class
+)
 
 func NewClass(obj *C.Eolian_Class) *Class {
 	return &Class{
@@ -30,7 +40,11 @@ func ClassByFile(file string) *Class {
 }
 
 func AllClasses() []*Class {
-	return NewIterator(C.eolian_all_classes_get()).ClassSlice()
+	if classes != nil {
+		return classes
+	}
+	classes = NewIterator(C.eolian_all_classes_get()).ClassSlice()
+	return classes
 }
 
 func (p *Class) IsValid() bool {
@@ -50,8 +64,11 @@ func (p *Class) Name() string {
 }
 
 func (p *Class) Namespaces() []string {
-	ns := C.eolian_class_namespaces_get(p.obj)
-	return NewIterator(ns).StringSlice()
+	if p.namespaces != nil {
+		return p.namespaces
+	}
+	p.namespaces = NewIterator(C.eolian_class_namespaces_get(p.obj)).StringSlice()
+	return p.namespaces
 }
 
 func (p *Class) Type() ClassType {
@@ -75,11 +92,19 @@ func (p *Class) DataType() string {
 }
 
 func (p *Class) Inherits() []string {
-	return NewIterator(C.eolian_class_inherits_get(p.obj)).StringSlice()
+	if p.inherits != nil {
+		return p.inherits
+	}
+	p.inherits = NewIterator(C.eolian_class_inherits_get(p.obj)).StringSlice()
+	return p.inherits
 }
 
 func (p *Class) Functions(t FunctionType) []*Function {
-	return NewIterator(C.eolian_class_functions_get(p.obj, C.Eolian_Function_Type(t))).FunctionSlice()
+	if p.functions != nil {
+		return p.functions
+	}
+	p.functions = NewIterator(C.eolian_class_functions_get(p.obj, C.Eolian_Function_Type(t))).FunctionSlice()
+	return p.functions
 }
 
 func (p *Class) FunctionByName(name string, t FunctionType) *Function {
@@ -89,15 +114,27 @@ func (p *Class) FunctionByName(name string, t FunctionType) *Function {
 }
 
 func (p *Class) Implements() []*Implement {
-	return NewIterator(C.eolian_class_implements_get(p.obj)).ImplementSlice()
+	if p.implements != nil {
+		return p.implements
+	}
+	p.implements = NewIterator(C.eolian_class_implements_get(p.obj)).ImplementSlice()
+	return p.implements
 }
 
 func (p *Class) Constructors() []*Constructor {
-	return NewIterator(C.eolian_class_constructors_get(p.obj)).ConstructorSlice()
+	if p.constructors != nil {
+		return p.constructors
+	}
+	p.constructors = NewIterator(C.eolian_class_constructors_get(p.obj)).ConstructorSlice()
+	return p.constructors
 }
 
 func (p *Class) Events() []*Event {
-	return NewIterator(C.eolian_class_events_get(p.obj)).EventSlice()
+	if p.events != nil {
+		return p.events
+	}
+	p.events = NewIterator(C.eolian_class_events_get(p.obj)).EventSlice()
+	return p.events
 }
 
 func (p *Class) EventByName(name string) *Event {
@@ -115,7 +152,7 @@ func (p *Class) DestructorEnabled() bool {
 }
 
 func (p *Class) CGetFunctionName() string {
-	return GoStringFromShared(C.eolian_class_c_get_function_name_get(p.obj))
+	return GoString(C.eolian_class_c_get_function_name_get(p.obj), true)
 }
 
 func (p *Class) Documentation() *Documentation {
@@ -124,6 +161,6 @@ func (p *Class) Documentation() *Documentation {
 
 /* not in 1.18.4
 func (p *Class) CDataType() string {
-	return GoStringFromShared(C.eolian_class_c_data_type_get(p.obj))
+	return GoString(C.eolian_class_c_data_type_get(p.obj) , true)
 }
 */

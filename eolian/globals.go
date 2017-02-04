@@ -8,6 +8,13 @@ package eolian
 import "C"
 import "unsafe"
 
+var (
+	allEoFilePaths  []string
+	allEotFilePaths []string
+	allEoFiles      []string
+	allEotFiles     []string
+)
+
 func init() {
 	C.eolian_init()
 }
@@ -23,19 +30,35 @@ func ParseFile(filePath string) bool {
 }
 
 func AllEoFilePaths() []string {
-	return NewIterator(C.eolian_all_eo_file_paths_get()).StringSlice()
+	if allEoFilePaths != nil {
+		return allEoFilePaths
+	}
+	allEoFilePaths = NewIterator(C.eolian_all_eo_file_paths_get()).StringSlice()
+	return allEoFilePaths
 }
 
 func AllEotFilePaths() []string {
-	return NewIterator(C.eolian_all_eot_file_paths_get()).StringSlice()
+	if allEotFilePaths != nil {
+		return allEotFilePaths
+	}
+	allEotFilePaths = NewIterator(C.eolian_all_eot_file_paths_get()).StringSlice()
+	return allEotFilePaths
 }
 
 func AllEoFiles() []string {
-	return NewIterator(C.eolian_all_eo_files_get()).StringSlice()
+	if allEoFiles != nil {
+		return allEoFiles
+	}
+	allEoFiles = NewIterator(C.eolian_all_eo_files_get()).StringSlice()
+	return allEoFiles
 }
 
 func AllEotFiles() []string {
-	return NewIterator(C.eolian_all_eot_files_get()).StringSlice()
+	if allEotFiles != nil {
+		return allEotFiles
+	}
+	allEotFiles = NewIterator(C.eolian_all_eot_files_get()).StringSlice()
+	return allEotFiles
 }
 
 func ParseAllEoFiles() bool {
